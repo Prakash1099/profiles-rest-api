@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status  #List of handy HTTP status codes
 from rest_framework import viewsets
 from rest_framework.authentication import TokenAuthentication
+from rest_framework import filters
 
 from . import serializers
 from . import models
@@ -153,5 +154,7 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     queryset = models.UserProfile.objects.all()
     authentication_classes = (TokenAuthentication, )  # this has to be a tuple
     permission_classes = (permissions.UpdateOwnProfile, ) # HAs to be tuple
+    filter_backends = (filters.SearchFilter, )
+    search_fields = ('name', 'email')
     
 
