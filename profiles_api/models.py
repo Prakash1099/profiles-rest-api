@@ -30,7 +30,7 @@ class UserProfileManager(BaseUserManager):
 
     def create_superuser(self, email, name, password):
         """Create and save a new super user with given details"""
-
+        
         user = self.create_user(email, name, password)
 
         # this is not defined in the userProfile class but still mentioned because these are coming form the PermissionsMixin

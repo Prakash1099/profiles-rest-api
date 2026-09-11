@@ -2,8 +2,11 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status  #List of handy HTTP status codes
 from rest_framework import viewsets
+from rest_framework.authentication import TokenAuthentication
 
 from . import serializers
+from . import models
+from . import permissions
 
 
 # APIView -> parent class from django_rest
@@ -139,3 +142,16 @@ class HelloViewSet(viewsets.ViewSet):
         return Response({
             'http_method': 'DELETE'
         })
+
+# ModelViewSet -> Specificaly desinged for handling Model via API
+
+class UserProfileViewSet(viewsets.ModelViewSet):
+    """handle creating and updating profiles"""
+
+    # The Variable names to be exactly as it is
+    serializer_class = serializers.UserProfileSerializer
+    queryset = models.UserProfile.objects.all()
+    authentication_classes = (TokenAuthentication, )  # this has to be a tuple
+    permission_classes = (permissions.UpdateOwnProfile, ) # HAs to be tuple
+    
+
