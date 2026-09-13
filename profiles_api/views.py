@@ -4,6 +4,8 @@ from rest_framework import status  #List of handy HTTP status codes
 from rest_framework import viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework import filters
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.settings import api_settings
 
 from . import serializers
 from . import models
@@ -144,8 +146,8 @@ class HelloViewSet(viewsets.ViewSet):
             'http_method': 'DELETE'
         })
 
-# ModelViewSet -> Specificaly desinged for handling Model via API
 
+# ModelViewSet -> Specificaly desinged for handling Model via API
 class UserProfileViewSet(viewsets.ModelViewSet):
     """handle creating and updating profiles"""
 
@@ -153,8 +155,15 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.UserProfileSerializer
     queryset = models.UserProfile.objects.all()
     authentication_classes = (TokenAuthentication, )  # this has to be a tuple
-    permission_classes = (permissions.UpdateOwnProfile, ) # HAs to be tuple
+    permission_classes = (permissions.UpdateOwnProfile, ) # Has to be tuple
     filter_backends = (filters.SearchFilter, )
     search_fields = ('name', 'email')
-    
 
+
+class UserLoginApiView(ObtainAuthToken):
+    """Handle creating user authentication token"""
+
+    # we are overriding the orriginal ObtainAuthtotken class, so it is easy to test adn inspect
+
+    #Renderer classes is available for otehr Views as default but for AuthToken we need to specify.
+    renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
