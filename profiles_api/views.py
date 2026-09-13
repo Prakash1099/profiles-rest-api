@@ -6,6 +6,7 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework import filters
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.settings import api_settings
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 
 from . import serializers
 from . import models
@@ -167,3 +168,21 @@ class UserLoginApiView(ObtainAuthToken):
 
     #Renderer classes is available for otehr Views as default but for AuthToken we need to specify.
     renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
+
+class UserProfileFeedViewSet(viewsets.ModelViewSet):
+    """Handlees creatung Feeds/profile status"""
+
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (
+        permissions.UpdateOwnFeed,
+        # IsAuthenticatedOrReadOnly  #Non Authenticated user can see but can't edit a feed
+        IsAuthenticated   #only Authenticated user can see or edit a feed
+
+    )
+    serializer_class = serializers.ProfileFeedItemSerializer
+    queryset = models.ProfileFeedItem.objects.all()
+
+    def perform_create(self, serializer):
+        """Overiding the default Create method of the viewset class"""
+
+        serializer.save(user_profile=self.request.user)

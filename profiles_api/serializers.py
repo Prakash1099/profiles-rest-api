@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import UserProfile
+from . import models
 
 class HelloSerializer(serializers.Serializer):
     """Serialize a name field for test out APIView"""
@@ -13,7 +13,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         """To point to a specific model in our project"""
 
-        model = UserProfile
+        model = models.UserProfile
 
         fields=('id', 'email', 'name', 'password') #must be a tuple
         extra_kwargs = {
@@ -27,7 +27,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """Create and return a new user"""
-        user = UserProfile.objects.create_user(
+        user = models.UserProfile.objects.create_user(
             email=validated_data['email'],
             name=validated_data['name'],
             password=validated_data['password'],
@@ -50,3 +50,17 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
         return super().update(instance, validated_data)  ## To pass the values to existing DRF update function
 
+
+class ProfileFeedItemSerializer(serializers.ModelSerializer):
+    """Serializers profile feed item"""
+
+    class Meta:
+        model = models.ProfileFeedItem
+        fields = ('id', 'user_profile', 'status_text', 'created_on')
+
+        extra_kwargs = {
+            'user_profile': {
+                'read_only': True
+            }
+        }
+    
